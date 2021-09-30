@@ -2,9 +2,8 @@ import React, {useState, useEffect} from 'react';
 import { View, Text, TouchableOpacity } from 'react-native';
 import styles from './CameraComponentStyle';
 import PhotoModal from '../PhotoModalComponent/PhotoModalComponent';
-import appStyles from '../../styles';
 import { Camera } from 'expo-camera';
-import * as FileSystem from 'expo-file-system';
+import * as MediaLibrary from 'expo-media-library';
 
 interface Props {
     
@@ -12,16 +11,19 @@ interface Props {
 
 const CameraComponent = (props: Props) => {
     const [hasCameraPermission, setHasCameraPermission] = useState(false);
-    const [hasStoragePermission, setHasStoragePermission] = useState(false);
+    const [hasMediaPermission, setHasMediaPermission] = useState(false);
     const [showModal, setShowModal] = useState(false);
     const [lastPhotoUri, setLastPhotoUri] = useState('');
     const [type, setType] = useState(Camera.Constants.Type.back);
+    const albumName = 'OCR App';
     let cameraRef: Camera | null;
 
     useEffect(() => {
         (async () => {
-            const cameraPermission = await Camera.requestCameraPermissionsAsync();
+            const cameraPermission = await Camera.getPermissionsAsync();
             setHasCameraPermission(cameraPermission.status === 'granted');
+            const mediaPermission = await MediaLibrary.getPermissionsAsync();
+            setHasMediaPermission(mediaPermission.granted);
         })();
     }, []);
 
@@ -33,8 +35,17 @@ const CameraComponent = (props: Props) => {
         }
     }
 
-    const processPhoto = () => {
-
+    const processPhoto = async () => {
+        if (hasMediaPermission) {
+            const newPhoto = await MediaLibrary.createAssetAsync(lastPhotoUri);
+            const album = await MediaLibrary.getAlbumAsync(albumName);
+            if (album) {
+                await MediaLibrary.addAssetsToAlbumAsync([newPhoto], album, false);
+            } else {
+                await MediaLibrary.createAlbumAsync(albumName, newPhoto, false);
+            }
+        }
+        setShowModal(false);
     }
 
     if (hasCameraPermission === false) {

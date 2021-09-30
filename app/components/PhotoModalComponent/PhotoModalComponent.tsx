@@ -22,6 +22,10 @@ const PhotoModalComponent = (props: Props) => {
                 </TouchableOpacity>
 
                 <Image style={{ width: '100%', height: 300, borderRadius: 20 }} source={{ uri: uri }} />
+
+                <TouchableOpacity style={{margin: 10}} onPress={() => onOk()} >
+                    <Ionicons name="save" size={32} color="blue" />
+                </TouchableOpacity>
             </View>
         </Modal>
     );
