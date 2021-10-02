@@ -4,6 +4,7 @@ import styles from './CameraComponentStyle';
 import PhotoModal from '../PhotoModalComponent/PhotoModalComponent';
 import { Camera } from 'expo-camera';
 import * as MediaLibrary from 'expo-media-library';
+import { useAppSelector } from '../../redux/hooks';
 
 interface Props {
     
@@ -17,13 +18,14 @@ const CameraComponent = (props: Props) => {
     const [type, setType] = useState(Camera.Constants.Type.back);
     const albumName = 'OCR App';
     let cameraRef: Camera | null;
+    
+    const storeCameraPermission = useAppSelector((state) => state.appConfigReducer.cameraPermission);
+    const storeMediaPermission = useAppSelector((state) => state.appConfigReducer.mediaPermission);
 
     useEffect(() => {
         (async () => {
-            const cameraPermission = await Camera.getPermissionsAsync();
-            setHasCameraPermission(cameraPermission.status === 'granted');
-            const mediaPermission = await MediaLibrary.getPermissionsAsync();
-            setHasMediaPermission(mediaPermission.granted);
+            setHasCameraPermission(storeCameraPermission);
+            setHasMediaPermission(storeMediaPermission);
         })();
     }, []);
 
