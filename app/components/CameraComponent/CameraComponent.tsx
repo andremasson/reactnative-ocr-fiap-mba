@@ -42,9 +42,9 @@ const CameraComponent = (props: Props) => {
             const newPhoto = await MediaLibrary.createAssetAsync(lastPhotoUri);
             const album = await MediaLibrary.getAlbumAsync(albumName);
             if (album) {
-                await MediaLibrary.addAssetsToAlbumAsync([newPhoto], album, false);
+                await MediaLibrary.addAssetsToAlbumAsync([newPhoto], album);
             } else {
-                await MediaLibrary.createAlbumAsync(albumName, newPhoto, false);
+                await MediaLibrary.createAlbumAsync(albumName, newPhoto);
             }
         }
         setShowModal(false);
